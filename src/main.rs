@@ -1,6 +1,11 @@
+mod compiler;
 mod lexer;
+mod parser;
+mod vm;
 
 use crate::lexer::lex;
+use crate::parser::parse;
+use crate::vm::interpret;
 use std::io;
 
 fn main() {
@@ -10,8 +15,7 @@ fn main() {
 fn repl() {
     loop {
         let line = read_line();
-        let tokens = lex(&line).unwrap();
-        println!("{:?}", tokens);
+        interpret(&line);
     }
 }
 

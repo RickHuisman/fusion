@@ -4,7 +4,7 @@ use crate::lexer::token::{Token, TokenType};
 
 mod error;
 mod lexer;
-mod token;
+pub mod token;
 
 pub fn lex(source: &str) -> LexResult<Vec<Token>> {
     let mut lexer = Lexer::new(source);

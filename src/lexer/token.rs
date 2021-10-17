@@ -42,6 +42,15 @@ pub enum TokenType {
     Star,
     Slash,
 
+    Bang,
+    BangEqual,
+    Equal,
+    EqualEqual,
+    LessThan,
+    LessThanEqual,
+    GreaterThan,
+    GreaterThanEqual,
+
     Number,
     EOF,
 }
