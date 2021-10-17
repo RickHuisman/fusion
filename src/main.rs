@@ -3,8 +3,6 @@ mod lexer;
 mod parser;
 mod vm;
 
-use crate::lexer::lex;
-use crate::parser::parse;
 use crate::vm::interpret;
 use std::io;
 

@@ -1,6 +1,6 @@
 use crate::compiler::value::Value;
 use crate::vm::opcode::Opcode;
-use std::fmt::{Formatter, Display, Result};
+use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug, Clone)]
 pub struct Chunk {

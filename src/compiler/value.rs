@@ -1,15 +1,17 @@
 use std::fmt::{Display, Formatter, Result};
-use std::ops::{Add, Sub, Mul, Div};
+use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Debug, Clone)]
 pub enum Value {
     Number(f64),
+    Bool(bool),
 }
 
 impl Display for Value {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Value::Number(n) => write!(f, "{}", n),
+            Value::Bool(b) => write!(f, "{}", b),
         }
     }
 }

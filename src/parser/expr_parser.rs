@@ -58,10 +58,7 @@ fn parse_expr(parser: &mut Parser, precedence: Precedence) -> ParseResult<Expr> 
 
 fn parse_prefix(parser: &mut Parser) -> ParseResult<Expr> {
     match parser.peek_type()? {
-        TokenType::Number => {
-            let token = parser.consume()?;
-            Ok(Expr::number(token.source().parse::<f64>().unwrap()))
-        }
+        TokenType::Number | TokenType::True | TokenType::False => parse_primary(parser),
         _ => Err(ParserError::Unexpected(parser.peek_type()?.clone())),
     }
 }
@@ -79,6 +76,16 @@ fn parse_infix(parser: &mut Parser, left: Expr) -> ParseResult<Expr> {
         | TokenType::Star
         | TokenType::Slash => parse_binary(parser, left),
         _ => Err(ParserError::Unexpected(parser.peek_type()?.clone())),
+    }
+}
+
+fn parse_primary(parser: &mut Parser) -> ParseResult<Expr> {
+    let token = parser.consume()?;
+    match token.token_type() {
+        TokenType::Number => Ok(Expr::number(token.source().parse::<f64>().unwrap())),
+        TokenType::True => Ok(Expr::true_()),
+        TokenType::False => Ok(Expr::false_()),
+        _ => Err(ParserError::ExpectedPrimary(token.token_type().clone())),
     }
 }
 

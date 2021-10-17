@@ -1,5 +1,5 @@
 use crate::lexer::error::{LexResult, SyntaxError};
-use crate::lexer::token::{Position, Token, TokenType};
+use crate::lexer::token::{Position, ToKeyword, Token, TokenType};
 use std::iter::Peekable;
 use std::str::CharIndices;
 
@@ -26,6 +26,9 @@ impl<'a> Lexer<'a> {
 
         let (start, c) = self.advance()?;
 
+        if c.is_alphabetic() {
+            return self.identifier(start);
+        }
         if c.is_digit(10) {
             return self.number(start);
         }
@@ -56,7 +59,13 @@ impl<'a> Lexer<'a> {
             }
         };
 
-        Ok(Some(self.make_token(token_type, start)))
+        self.make_token(token_type, start)
+    }
+
+    fn identifier(&mut self, start: usize) -> LexResult<Option<Token<'a>>> {
+        self.advance_while(|&c| c.is_alphanumeric())?;
+        let keyword = self.token_contents(start).to_keyword();
+        self.make_token(keyword, start)
     }
 
     fn number(&mut self, start: usize) -> LexResult<Option<Token<'a>>> {
@@ -76,17 +85,17 @@ impl<'a> Lexer<'a> {
             }
         }
 
-        Ok(Some(self.make_token(TokenType::Number, start)))
+        self.make_token(TokenType::Number, start)
     }
 
     fn eof(&mut self) -> LexResult<Option<Token<'a>>> {
-        Ok(Some(self.make_token(TokenType::EOF, self.source.len())))
+        self.make_token(TokenType::EOF, self.source.len())
     }
 
-    fn make_token(&mut self, token_type: TokenType, start: usize) -> Token<'a> {
+    fn make_token(&mut self, token_type: TokenType, start: usize) -> LexResult<Option<Token<'a>>> {
         let source = self.token_contents(start);
         let pos = Position::new(start, start + source.len(), self.line);
-        Token::new(token_type, source, pos)
+        Ok(Some(Token::new(token_type, source, pos)))
     }
 
     fn token_contents(&mut self, start: usize) -> &'a str {

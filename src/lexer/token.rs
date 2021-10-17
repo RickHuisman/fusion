@@ -51,6 +51,10 @@ pub enum TokenType {
     GreaterThan,
     GreaterThanEqual,
 
+    True,
+    False,
+    Identifier,
+
     Number,
     EOF,
 }
@@ -77,5 +81,19 @@ impl Position {
 
     pub fn line(&self) -> &usize {
         &self.line
+    }
+}
+
+pub trait ToKeyword {
+    fn to_keyword(self) -> TokenType;
+}
+
+impl ToKeyword for &str {
+    fn to_keyword(self) -> TokenType {
+        match self {
+            "true" => TokenType::True,
+            "false" => TokenType::False,
+            _ => return TokenType::Identifier,
+        }
     }
 }

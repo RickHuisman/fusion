@@ -6,7 +6,7 @@ use crate::vm::opcode::Opcode;
 pub fn compile_expr(c: &mut Compiler, expr: Expr) {
     match expr {
         Expr::Binary { left, op, right } => compile_binary(c, left, op, right),
-        Expr::Number(n) => compile_number(c, n),
+        Expr::Literal(l) => compile_literal(c, l),
     }
 }
 
@@ -23,6 +23,10 @@ fn compile_binary(compiler: &mut Compiler, left: Box<Expr>, op: BinaryOperator, 
     }
 }
 
-fn compile_number(compiler: &mut Compiler, number: f64) {
-    compiler.emit_constant(Value::Number(number));
+fn compile_literal(compiler: &mut Compiler, literal: LiteralExpr) {
+    match literal {
+        LiteralExpr::Number(n) => compiler.emit_constant(Value::Number(n)),
+        LiteralExpr::True => compiler.emit_constant(Value::Bool(true)),
+        LiteralExpr::False => compiler.emit_constant(Value::Bool(false)),
+    }
 }

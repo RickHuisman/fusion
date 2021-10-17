@@ -8,7 +8,7 @@ pub enum Expr {
         op: BinaryOperator,
         right: Box<Expr>,
     },
-    Number(f64),
+    Literal(LiteralExpr),
 }
 
 impl Expr {
@@ -21,8 +21,23 @@ impl Expr {
     }
 
     pub fn number(n: f64) -> Expr {
-        Expr::Number(n)
+        Expr::Literal(LiteralExpr::Number(n))
     }
+
+    pub fn true_() -> Expr {
+        Expr::Literal(LiteralExpr::True)
+    }
+
+    pub fn false_() -> Expr {
+        Expr::Literal(LiteralExpr::False)
+    }
+}
+
+#[derive(PartialEq, Debug)]
+pub enum LiteralExpr {
+    Number(f64),
+    True,
+    False,
 }
 
 #[derive(PartialEq, Debug)]
