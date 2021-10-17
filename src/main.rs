@@ -1,3 +1,6 @@
+mod lexer;
+
+use crate::lexer::lex;
 use std::io;
 
 fn main() {
@@ -6,7 +9,9 @@ fn main() {
 
 fn repl() {
     loop {
-        println!("{}", &read_line());
+        let line = read_line();
+        let tokens = lex(&line).unwrap();
+        println!("{:?}", tokens);
     }
 }
 
