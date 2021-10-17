@@ -57,6 +57,8 @@ pub enum TokenType {
     Identifier,
 
     Number,
+
+    Line,
     EOF,
 }
 

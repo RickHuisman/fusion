@@ -14,7 +14,7 @@ impl<W: Write> VM<W> {
                 Opcode::Multiply => self.multiply()?,
                 Opcode::Divide => self.divide()?,
                 Opcode::SetGlobal => self.set_global()?,
-                Opcode::GetGlobal => {}
+                Opcode::GetGlobal => self.get_global()?,
                 Opcode::Return => self.ret()?,
                 Opcode::Puts => self.puts()?,
             }
@@ -64,6 +64,17 @@ impl<W: Write> VM<W> {
         }
 
         Err(RuntimeError::BadStackIndex(10, self.stack().len())) // TODO: 10.
+    }
+
+    fn get_global(&mut self) -> RunResult<()> {
+        let name = self.read_string()?;
+
+        if let Some(value) = self.globals().get(&name).cloned() {
+            self.push(value);
+            return Ok(());
+        }
+
+        Err(RuntimeError::UndefinedGlobal(name))
     }
 
     fn ret(&mut self) -> RunResult<()> {

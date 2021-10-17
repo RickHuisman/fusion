@@ -7,7 +7,14 @@ use crate::vm::interpret;
 use std::io;
 
 fn main() {
-    repl();
+    let source = r#"
+    x = 5
+    y = x / 2
+    puts y
+    puts x
+    "#;
+    interpret(source);
+    // repl();
 }
 
 fn repl() {

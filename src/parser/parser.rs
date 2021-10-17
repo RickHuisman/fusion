@@ -28,7 +28,7 @@ impl<'a> Parser<'a> {
 
     pub fn parse_expr_statement(&mut self) -> ParseResult<Expr> {
         let expr = self.expression()?;
-        // self.match_(TokenType::Semicolon)?; TODO
+        self.match_(TokenType::Line)?;
         Ok(expr)
     }
 

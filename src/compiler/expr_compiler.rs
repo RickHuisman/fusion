@@ -36,7 +36,11 @@ fn compile_var_set(compiler: &mut Compiler, name: Identifier, value: Box<Expr>) 
     compiler.emit_byte(constant_id);
 }
 
-fn compile_var_get(compiler: &mut Compiler, name: Identifier) {}
+fn compile_var_get(compiler: &mut Compiler, name: Identifier) {
+    compiler.emit(Opcode::GetGlobal);
+    let constant_id = compiler.add_constant(Value::String(name));
+    compiler.emit_byte(constant_id);
+}
 
 fn compile_literal(compiler: &mut Compiler, literal: LiteralExpr) {
     match literal {

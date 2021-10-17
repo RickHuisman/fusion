@@ -5,4 +5,5 @@ pub enum RuntimeError {
     StackEmpty,
     ArgumentTypes,
     BadStackIndex(usize, usize),
+    UndefinedGlobal(String),
 }

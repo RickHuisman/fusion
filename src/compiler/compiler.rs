@@ -22,6 +22,10 @@ impl Compiler {
         self.chunk
     }
 
+    pub fn add_constant(&mut self, value: Value) -> u8 {
+        self.current_chunk().add_constant(value)
+    }
+
     pub fn emit_return(&mut self) {
         // self.emit(Opcode::Nil); // TODO: Return Nil???
         self.emit(Opcode::Return);

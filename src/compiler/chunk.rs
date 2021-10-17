@@ -72,7 +72,7 @@ fn disassemble_instruction(f: &mut Formatter<'_>, chunk: &Chunk, offset: &mut us
         Opcode::Multiply => simple_instruction(f, "MULTIPLY", offset),
         Opcode::Divide => simple_instruction(f, "DIVIDE", offset),
         Opcode::SetGlobal => constant_instruction(chunk, f, "SET_GLOBAL", offset),
-        Opcode::GetGlobal => *offset,
+        Opcode::GetGlobal => constant_instruction(chunk, f, "GET_GLOBAL", offset),
         Opcode::Puts => simple_instruction(f, "PUTS", offset),
     }
 }
