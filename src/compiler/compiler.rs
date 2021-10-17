@@ -13,13 +13,13 @@ impl Compiler {
         }
     }
 
-    pub fn end_compiler(&mut self) -> Chunk {
+    pub fn end_compiler(mut self) -> Chunk {
         // TODO: Clones???
-        self.emit_return();
+        // self.emit_return();
 
         println!("{}", self.current_chunk());
 
-        self.chunk.clone()
+        self.chunk
     }
 
     pub fn emit_return(&mut self) {

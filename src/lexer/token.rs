@@ -53,6 +53,7 @@ pub enum TokenType {
 
     True,
     False,
+    Puts,
     Identifier,
 
     Number,
@@ -93,6 +94,7 @@ impl ToKeyword for &str {
         match self {
             "true" => TokenType::True,
             "false" => TokenType::False,
+            "puts" => TokenType::Puts,
             _ => return TokenType::Identifier,
         }
     }

@@ -54,6 +54,7 @@ impl<'a> Lexer<'a> {
                     TokenType::Slash
                 }
             }
+            '=' => TokenType::Equal,
             _ => {
                 return Err(SyntaxError::UnexpectedChar);
             }

@@ -15,8 +15,15 @@ impl<'a> Parser<'a> {
 
     pub fn parse_top_level_expr(&mut self) -> ParseResult<Expr> {
         match self.peek_type()? {
+            TokenType::Puts => self.parse_puts(),
             _ => self.parse_expr_statement(),
         }
+    }
+
+    fn parse_puts(&mut self) -> ParseResult<Expr> {
+        self.expect(TokenType::Puts)?;
+        let expr = self.parse_expr_statement()?;
+        Ok(Expr::puts(expr))
     }
 
     pub fn parse_expr_statement(&mut self) -> ParseResult<Expr> {
@@ -27,6 +34,19 @@ impl<'a> Parser<'a> {
 
     pub fn expression(&mut self) -> ParseResult<Expr> {
         expr_parser::parse(self)
+    }
+
+    pub fn expect(&mut self, expect: TokenType) -> ParseResult<Token<'a>> {
+        if self.check(expect.clone())? {
+            // TODO: Clone
+            return Ok(self.consume()?);
+        }
+
+        Err(ParserError::Expected(
+            expect.clone(),                         // TODO: Clone
+            self.peek_type()?.clone(),              // TODO: Clone
+            self.peek()?.position().line().clone(), // TODO: Clone
+        ))
     }
 
     pub fn consume(&mut self) -> ParseResult<Token<'a>> {

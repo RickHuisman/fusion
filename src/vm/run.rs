@@ -1,4 +1,4 @@
-use crate::vm::error::RunResult;
+use crate::vm::error::{RunResult, RuntimeError};
 use crate::vm::opcode::Opcode;
 use crate::vm::vm::VM;
 use std::io::Write;
@@ -13,7 +13,10 @@ impl<W: Write> VM<W> {
                 Opcode::Subtract => self.subtract()?,
                 Opcode::Multiply => self.multiply()?,
                 Opcode::Divide => self.divide()?,
+                Opcode::SetGlobal => self.set_global()?,
+                Opcode::GetGlobal => {}
                 Opcode::Return => self.ret()?,
+                Opcode::Puts => self.puts()?,
             }
         }
         Ok(())
@@ -53,8 +56,24 @@ impl<W: Write> VM<W> {
         Ok(())
     }
 
+    fn set_global(&mut self) -> RunResult<()> {
+        if let Ok(value) = self.pop() {
+            let var_name = self.read_string()?;
+            self.globals_mut().insert(var_name, value);
+            return Ok(());
+        }
+
+        Err(RuntimeError::BadStackIndex(10, self.stack().len())) // TODO: 10.
+    }
+
     fn ret(&mut self) -> RunResult<()> {
         println!("{}", self.pop()?);
+        Ok(())
+    }
+
+    fn puts(&mut self) -> RunResult<()> {
+        let popped = self.pop()?;
+        writeln!(self.stdout_mut(), "{}", popped);
         Ok(())
     }
 }

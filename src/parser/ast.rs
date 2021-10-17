@@ -8,6 +8,16 @@ pub enum Expr {
         op: BinaryOperator,
         right: Box<Expr>,
     },
+    VarSet {
+        name: Identifier,
+        value: Box<Expr>,
+    },
+    VarGet {
+        name: Identifier,
+    },
+    Puts {
+        value: Box<Expr>,
+    },
     Literal(LiteralExpr),
 }
 
@@ -18,6 +28,17 @@ impl Expr {
             op,
             right: Box::new(right),
         }
+    }
+
+    pub fn var_set(name: Identifier, value: Expr) -> Self {
+        Expr::VarSet {
+            name,
+            value: Box::new(value),
+        }
+    }
+
+    pub fn var_get(name: Identifier) -> Self {
+        Expr::VarGet { name }
     }
 
     pub fn number(n: f64) -> Expr {
@@ -31,7 +52,15 @@ impl Expr {
     pub fn false_() -> Expr {
         Expr::Literal(LiteralExpr::False)
     }
+
+    pub fn puts(value: Expr) -> Self {
+        Expr::Puts {
+            value: Box::new(value),
+        }
+    }
 }
+
+pub type Identifier = String;
 
 #[derive(PartialEq, Debug)]
 pub enum LiteralExpr {

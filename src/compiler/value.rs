@@ -5,6 +5,7 @@ use std::ops::{Add, Div, Mul, Sub};
 pub enum Value {
     Number(f64),
     Bool(bool),
+    String(String),
 }
 
 impl Display for Value {
@@ -12,6 +13,7 @@ impl Display for Value {
         match self {
             Value::Number(n) => write!(f, "{}", n),
             Value::Bool(b) => write!(f, "{}", b),
+            Value::String(s) => write!(f, "{}", s),
         }
     }
 }
