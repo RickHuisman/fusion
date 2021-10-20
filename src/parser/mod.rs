@@ -3,7 +3,7 @@ use crate::parser::ast::Expr;
 use crate::parser::error::ParseResult;
 use crate::parser::parser::Parser;
 
-pub(crate) mod ast;
+pub mod ast;
 mod error;
 mod expr_parser;
 mod parser;

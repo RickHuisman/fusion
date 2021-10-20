@@ -1,5 +1,5 @@
 use crate::lexer::token::{Token, TokenType};
-use crate::parser::ast::Expr;
+use crate::parser::ast::{BlockDecl, Expr, FunDecl, Identifier};
 use crate::parser::error::{ParseResult, ParserError};
 use crate::parser::expr_parser;
 
@@ -16,6 +16,7 @@ impl<'a> Parser<'a> {
     pub fn parse_top_level_expr(&mut self) -> ParseResult<Expr> {
         match self.peek_type()? {
             TokenType::Puts => self.parse_puts(),
+            TokenType::Def => self.parse_def(),
             _ => self.parse_expr_statement(),
         }
     }
@@ -26,6 +27,17 @@ impl<'a> Parser<'a> {
         Ok(Expr::puts(expr))
     }
 
+    fn parse_def(&mut self) -> ParseResult<Expr> {
+        self.expect(TokenType::Def)?;
+
+        let name = self.parse_identifier()?;
+        let args = self.parse_args()?;
+        let body = self.block()?;
+        let fun_decl = FunDecl::new(args, body);
+
+        Ok(Expr::fun(name, fun_decl))
+    }
+
     pub fn parse_expr_statement(&mut self) -> ParseResult<Expr> {
         let expr = self.expression()?;
         self.match_(TokenType::Line)?;
@@ -34,6 +46,38 @@ impl<'a> Parser<'a> {
 
     pub fn expression(&mut self) -> ParseResult<Expr> {
         expr_parser::parse(self)
+    }
+
+    pub fn parse_identifier(&mut self) -> ParseResult<Identifier> {
+        Ok(self.expect(TokenType::Identifier)?.source().to_string())
+    }
+
+    pub fn parse_args(&mut self) -> ParseResult<Vec<Identifier>> {
+        self.expect(TokenType::LeftParen)?;
+
+        let mut args = vec![];
+        while !self.check(TokenType::RightParen)? && !self.check(TokenType::EOF)? {
+            args.push(self.parse_identifier()?);
+
+            if !self.match_(TokenType::Comma)? {
+                break;
+            }
+        }
+
+        self.expect(TokenType::RightParen)?;
+
+        Ok(args)
+    }
+
+    fn block(&mut self) -> ParseResult<BlockDecl> {
+        self.expect(TokenType::Do);
+
+        let mut exprs = vec![];
+        while !self.match_(TokenType::End)? {
+            exprs.push(self.parse_top_level_expr()?);
+        }
+
+        Ok(exprs)
     }
 
     pub fn expect(&mut self, expect: TokenType) -> ParseResult<Token<'a>> {
@@ -65,7 +109,6 @@ impl<'a> Parser<'a> {
         if !self.check(token_type)? {
             return Ok(false);
         }
-
         self.consume()?;
         Ok(true)
     }

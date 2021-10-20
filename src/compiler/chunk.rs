@@ -74,6 +74,18 @@ fn disassemble_instruction(f: &mut Formatter<'_>, chunk: &Chunk, offset: &mut us
         Opcode::SetGlobal => constant_instruction(chunk, f, "SET_GLOBAL", offset),
         Opcode::GetGlobal => constant_instruction(chunk, f, "GET_GLOBAL", offset),
         Opcode::Puts => simple_instruction(f, "PUTS", offset),
+        Opcode::Closure => {
+            // TODO: Clean up.
+            *offset += 2;
+
+            let constant = chunk.code[*offset - 1];
+            write!(f, "{:-16} {:4} ", "CLOSURE", constant);
+            writeln!(f, "'{:?}'", chunk.constants()[constant as usize]);
+
+            *offset
+        }
+        Opcode::Call => byte_instruction(chunk, f, "CALL", offset),
+        Opcode::Pop => simple_instruction(f, "POP", offset),
     }
 }
 
@@ -91,5 +103,11 @@ fn constant_instruction(
     let constant = chunk.code()[*offset + 1];
     write!(f, "{:-16} {:4} ", name, constant);
     writeln!(f, "'{}'", chunk.constants()[constant as usize]);
+    *offset + 2
+}
+
+fn byte_instruction(chunk: &Chunk, f: &mut Formatter<'_>, name: &str, offset: &mut usize) -> usize {
+    let slot = chunk.code[*offset + 1];
+    writeln!(f, "{:-16} {:4X}", name, slot);
     *offset + 2
 }

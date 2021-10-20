@@ -4,8 +4,8 @@ use crate::lexer::token::{Token, TokenType};
 
 mod error;
 mod lexer;
-pub mod token;
 pub mod morph;
+pub mod token;
 
 pub fn lex(source: &str) -> LexResult<Vec<Token>> {
     let mut lexer = Lexer::new(source);

@@ -1,12 +1,20 @@
 use crate::lexer::token::TokenType;
 use crate::parser::error::{ParseResult, ParserError};
 
-#[derive(Debug)]
+#[derive(PartialEq, Debug)]
 pub enum Expr {
     Binary {
         left: Box<Expr>,
         op: BinaryOperator,
         right: Box<Expr>,
+    },
+    Fun {
+        name: Identifier,
+        decl: FunDecl,
+    },
+    Call {
+        callee: Box<Expr>,
+        args: Vec<Expr>,
     },
     VarSet {
         name: Identifier,
@@ -14,6 +22,9 @@ pub enum Expr {
     },
     VarGet {
         name: Identifier,
+    },
+    Block {
+        block: Box<BlockDecl>,
     },
     Puts {
         value: Box<Expr>,
@@ -27,6 +38,17 @@ impl Expr {
             left: Box::new(left),
             op,
             right: Box::new(right),
+        }
+    }
+
+    pub fn fun(name: Identifier, decl: FunDecl) -> Self {
+        Expr::Fun { name, decl }
+    }
+
+    pub fn call(callee: Expr, args: Vec<Expr>) -> Self {
+        Expr::Call {
+            callee: Box::new(callee),
+            args,
         }
     }
 
@@ -53,6 +75,12 @@ impl Expr {
         Expr::Literal(LiteralExpr::False)
     }
 
+    pub fn block(block: BlockDecl) -> Self {
+        Expr::Block {
+            block: Box::new(block),
+        }
+    }
+
     pub fn puts(value: Expr) -> Self {
         Expr::Puts {
             value: Box::new(value),
@@ -61,6 +89,7 @@ impl Expr {
 }
 
 pub type Identifier = String;
+pub type BlockDecl = Vec<Expr>;
 
 #[derive(PartialEq, Debug)]
 pub enum LiteralExpr {
@@ -99,5 +128,25 @@ impl BinaryOperator {
             TokenType::GreaterThanEqual => BinaryOperator::GreaterThanEqual,
             _ => return Err(ParserError::ExpectedBinaryOperator(token_type.clone())),
         })
+    }
+}
+
+#[derive(PartialEq, Debug)]
+pub struct FunDecl {
+    args: Vec<Identifier>,
+    body: BlockDecl,
+}
+
+impl FunDecl {
+    pub fn new(args: Vec<Identifier>, body: BlockDecl) -> Self {
+        FunDecl { args, body }
+    }
+
+    pub fn args(&self) -> &Vec<Identifier> {
+        &self.args
+    }
+
+    pub fn body(self) -> BlockDecl {
+        self.body
     }
 }

@@ -1,3 +1,4 @@
+use crate::compiler::object::{Closure, Function, Gc};
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Add, Div, Mul, Sub};
 
@@ -6,6 +7,8 @@ pub enum Value {
     Number(f64),
     Bool(bool),
     String(String),
+    Closure(Gc<Closure>),
+    Function(Gc<Function>),
 }
 
 impl Display for Value {
@@ -14,6 +17,8 @@ impl Display for Value {
             Value::Number(n) => write!(f, "{}", n),
             Value::Bool(b) => write!(f, "{}", b),
             Value::String(s) => write!(f, "{}", s),
+            Value::Closure(clos) => write!(f, "Closure({:?})", clos),
+            Value::Function(fun) => write!(f, "Function({})", **fun),
         }
     }
 }

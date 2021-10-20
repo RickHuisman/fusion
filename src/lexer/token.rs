@@ -54,6 +54,9 @@ pub enum TokenType {
     True,
     False,
     Puts,
+    Def,
+    Do,
+    End,
     Identifier,
 
     Number,
@@ -97,6 +100,9 @@ impl ToKeyword for &str {
             "true" => TokenType::True,
             "false" => TokenType::False,
             "puts" => TokenType::Puts,
+            "def" => TokenType::Def,
+            "do" => TokenType::Do,
+            "end" => TokenType::End,
             _ => return TokenType::Identifier,
         }
     }

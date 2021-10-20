@@ -77,6 +77,7 @@ fn parse_infix(parser: &mut Parser, left: Expr) -> ParseResult<Expr> {
         | TokenType::Minus
         | TokenType::Star
         | TokenType::Slash => parse_binary(parser, left),
+        TokenType::LeftParen => parse_call(parser, left),
         _ => Err(ParserError::Unexpected(parser.peek_type()?.clone())),
     }
 }
@@ -108,4 +109,22 @@ fn parse_binary(parser: &mut Parser, left: Expr) -> ParseResult<Expr> {
     let right = parse_expr(parser, precedence)?;
 
     Ok(Expr::binary(left, op, right))
+}
+
+fn parse_call(parser: &mut Parser, left: Expr) -> ParseResult<Expr> {
+    // TODO: Turn into a macro?
+    parser.expect(TokenType::LeftParen)?;
+
+    let mut args = vec![];
+    while !parser.check(TokenType::RightParen)? && !parser.check(TokenType::EOF)? {
+        args.push(parser.expression()?);
+
+        if !parser.match_(TokenType::Comma)? {
+            break;
+        }
+    }
+
+    parser.expect(TokenType::RightParen)?;
+
+    Ok(Expr::call(left, args))
 }

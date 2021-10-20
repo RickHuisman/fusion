@@ -8,7 +8,10 @@ pub enum Opcode {
     Divide,
     SetGlobal,
     GetGlobal,
+    Closure,
+    Call,
     Puts,
+    Pop,
 }
 
 impl From<u8> for Opcode {
@@ -22,7 +25,10 @@ impl From<u8> for Opcode {
             0x05 => Opcode::Divide,
             0x06 => Opcode::SetGlobal,
             0x07 => Opcode::GetGlobal,
-            0x08 => Opcode::Puts,
+            0x08 => Opcode::Closure,
+            0x09 => Opcode::Call,
+            0x0a => Opcode::Puts,
+            0x0b => Opcode::Pop,
             _ => panic!("No opcode for byte: {}", byte),
         }
     }

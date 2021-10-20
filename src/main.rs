@@ -8,10 +8,11 @@ use std::io;
 
 fn main() {
     let source = r#"
-    x = 5
-    y = x / 2
-    puts y
-    puts x
+    def foo() do
+      puts 10
+    end
+
+    foo()
     "#;
     interpret(source);
     // repl();
