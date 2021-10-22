@@ -75,17 +75,29 @@ fn compile_call(compiler: &mut Compiler, callee: Box<Expr>, args: Vec<Expr>) {
 fn compile_var_set(compiler: &mut Compiler, name: Identifier, value: Box<Expr>) {
     compile_expr(compiler, *value);
 
-    compiler.emit(Opcode::SetGlobal);
-    let constant_id = compiler
-        .current_chunk()
-        .add_constant(Value::String(name.to_string()));
-    compiler.emit_byte(constant_id);
+    if let Some(local) = compiler.resolve_local(&name) {
+        // Local variable
+        compiler.emit(Opcode::SetLocal);
+        compiler.emit_byte(local as u8);
+    } else {
+        // Global variable
+        compiler.emit(Opcode::SetGlobal);
+        let constant_id = compiler.add_constant(Value::String(name));
+        compiler.emit_byte(constant_id);
+    }
 }
 
 fn compile_var_get(compiler: &mut Compiler, name: Identifier) {
-    compiler.emit(Opcode::GetGlobal);
-    let constant_id = compiler.add_constant(Value::String(name));
-    compiler.emit_byte(constant_id);
+    if let Some(local) = compiler.resolve_local(&name) {
+        // Local variable
+        compiler.emit(Opcode::GetLocal);
+        compiler.emit_byte(local as u8);
+    } else {
+        // Global variable
+        compiler.emit(Opcode::GetGlobal);
+        let constant_id = compiler.add_constant(Value::String(name));
+        compiler.emit_byte(constant_id);
+    }
 }
 
 fn compile_block(compiler: &mut Compiler, block: Box<BlockDecl>) {

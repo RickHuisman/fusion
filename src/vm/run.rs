@@ -17,6 +17,8 @@ impl<W: Write> VM<W> {
                 Opcode::Divide => self.divide()?,
                 Opcode::SetGlobal => self.set_global()?,
                 Opcode::GetGlobal => self.get_global()?,
+                Opcode::SetLocal => self.set_local()?,
+                Opcode::GetLocal => self.get_local()?,
                 Opcode::Return => self.ret()?,
                 Opcode::Puts => self.puts()?,
                 Opcode::Closure => self.closure()?,
@@ -82,6 +84,27 @@ impl<W: Write> VM<W> {
         }
 
         Err(RuntimeError::UndefinedGlobal(name))
+    }
+
+    fn set_local(&mut self) -> RunResult<()> {
+        let value = self.peek()?.clone();
+        let start = *self.frame()?.stack_start();
+        let slot = self.read_byte()? as usize;
+        self.stack_mut()[start + slot] = value;
+        Ok(())
+    }
+
+    fn get_local(&mut self) -> RunResult<()> {
+        let start = *self.frame()?.stack_start();
+        let slot = self.read_byte()? as usize;
+        let index = start + slot;
+
+        if let Some(value) = self.stack().get(index).cloned() {
+            self.stack_mut().push(value);
+            return Ok(());
+        }
+
+        Err(RuntimeError::BadStackIndex(index, self.stack().len()))
     }
 
     fn ret(&mut self) -> RunResult<()> {

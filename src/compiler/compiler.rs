@@ -42,6 +42,16 @@ impl Compiler {
         self.emit_byte(constant_id);
     }
 
+    pub fn resolve_local(&mut self, name: &str) -> Option<usize> {
+        match self.current.resolve_local(name) {
+            Ok(local) => local,
+            Err(error) => {
+                self.add_error(error);
+                None
+            }
+        }
+    }
+
     pub fn begin_scope(&mut self) {
         self.current.locals_mut().begin_scope();
     }

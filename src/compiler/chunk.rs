@@ -73,6 +73,8 @@ fn disassemble_instruction(f: &mut Formatter<'_>, chunk: &Chunk, offset: &mut us
         Opcode::Divide => simple_instruction(f, "DIVIDE", offset),
         Opcode::SetGlobal => constant_instruction(chunk, f, "SET_GLOBAL", offset),
         Opcode::GetGlobal => constant_instruction(chunk, f, "GET_GLOBAL", offset),
+        Opcode::GetLocal => byte_instruction(chunk, f, "GET_LOCAL", offset),
+        Opcode::SetLocal => byte_instruction(chunk, f, "SET_LOCAL", offset),
         Opcode::Puts => simple_instruction(f, "PUTS", offset),
         Opcode::Closure => {
             // TODO: Clean up.
